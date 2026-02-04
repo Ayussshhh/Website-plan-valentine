@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Kirti 🐼❤️</title>
+    <style>
+        :root {
+            /* Change these hex codes if you find out her favorite color! */
+            --primary-bg: #f3e5f5; /* Light Lavender */
+            --card-bg: #ffffff;
+            --accent-pink: #ff80ab;
+            --text-color: #4a148c;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+            transition: background-color 1s ease;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 85%;
+            z-index: 10;
+        }
+
+        .panda-box { font-size: 4rem; margin-bottom: 1rem; }
+        
+        h1 { color: var(--text-color); font-size: 1.6rem; margin-bottom: 2rem; }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            height: 50px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        #yesBtn { background-color: var(--accent-pink); color: white; transition: transform 0.2s; }
+        #yesBtn:hover { transform: scale(1.15); }
+
+        #noBtn {
+            background-color: #f5f5f5;
+            color: #9e9e9e;
+            position: absolute;
+        }
+
+        .hidden { display: none; }
+        .celebrate-text { color: var(--accent-pink); font-size: 1.8rem; }
+    </style>
+</head>
+<body onclick="playMusic()">
+
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="card" id="mainCard">
+        <div id="questionArea">
+            <div class="panda-box">🐼❤️</div>
+            <h1>Kirti, will you be my Valentine?</h1>
+            <div class="btn-container">
+                <button id="yesBtn" onclick="showSuccess()">Yes</button>
+                <button id="noBtn" onmouseover="moveNoButton()" onclick="moveNoButton()">No</button>
+            </div>
+        </div>
+
+        <div id="successArea" class="hidden">
+            <div class="panda-box">🐼💖✨</div>
+            <h1 class="celebrate-text">IT WAS ALWAYS YES</h1>
+            <p>You just unlocked infinite love 🔓</p>
+            <p style="color: #888;">Best Valentine Ever 🌹✨</p>
+        </div>
+    </div>
+
+    <script>
+        let musicStarted = false;
+
+        function playMusic() {
+            if (!musicStarted) {
+                const music = document.getElementById('bgMusic');
+                music.play().catch(e => console.log("Audio requires interaction first"));
+                musicStarted = true;
+            }
+        }
+
+        function moveNoButton() {
+            playMusic(); // Start music if she tries to click No
+            const noBtn = document.getElementById('noBtn');
+            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
+        }
+
+        function showSuccess() {
+            document.getElementById('questionArea').classList.add('hidden');
+            document.getElementById('successArea').classList.remove('hidden');
+            document.body.style.backgroundColor = "#fce4ec";
+            
+            // Create falling hearts
+            for(let i=0; i<25; i++) {
+                setTimeout(createHeart, i * 100);
+            }
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.innerHTML = '❤️';
+            heart.style.position = 'fixed';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.top = '100vh';
+            heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            heart.style.transition = 'all 4s linear';
+            heart.style.zIndex = '5';
+            document.body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.style.top = '-10vh';
+                heart.style.opacity = '0';
+                heart.style.transform = `translateX(${(Math.random() - 0.5) * 100}px)`;
+            }, 100);
+
+            setTimeout(() => heart.remove(), 4000);
+        }
+    </script>
+</body>
+</html>
