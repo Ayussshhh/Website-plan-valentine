@@ -6,7 +6,7 @@
     <title>A Message for Kirti 🐼</title>
     <style>
         :root {
-            --primary-bg: #f3e5f5; /* Light Lavender */
+            --primary-bg: #f3e5f5;
             --accent-pink: #ff80ab;
             --text-color: #4a148c;
         }
@@ -22,14 +22,11 @@
             align-items: center;
         }
 
-        /* --- BACKGROUND HEARTS (Always Visible) --- */
+        /* --- BACKGROUND HEARTS (Always Active) --- */
         #background-hearts {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1; /* Above background but below everything else */
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1;
             pointer-events: none;
         }
 
@@ -51,7 +48,6 @@
         #envelope-wrapper {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            /* Transparent background so hearts show through */
             background-color: transparent; 
             display: flex;
             flex-direction: column;
@@ -59,6 +55,7 @@
             align-items: center;
             z-index: 100;
             transition: opacity 0.8s ease, visibility 0.8s;
+            cursor: pointer;
         }
 
         .envelope {
@@ -67,56 +64,53 @@
             height: 150px;
             background: #fff;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            cursor: pointer;
             border-radius: 5px;
-            transition: transform 0.3s;
+            z-index: 101;
         }
 
-        .envelope:hover { transform: scale(1.05); }
-
-        /* The Flap */
+        /* Envelope Flap */
         .envelope:before {
             content: "";
             position: absolute;
             top: 0; left: 0;
             border-left: 110px solid transparent;
             border-right: 110px solid transparent;
-            border-top: 90px solid var(--accent-pink);
-            z-index: 2;
+            border-top: 95px solid var(--accent-pink);
+            z-index: 102;
         }
 
         .panda-seal {
             position: absolute;
-            top: 45%;
-            left: 50%;
+            top: 45%; left: 50%;
             transform: translate(-50%, -50%);
             font-size: 2.5rem;
-            z-index: 3;
+            z-index: 103;
         }
 
         .envelope-text {
             margin-top: 30px;
             color: var(--text-color);
             font-weight: bold;
-            background: rgba(255, 255, 255, 0.7);
-            padding: 5px 15px;
-            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 8px 20px;
+            border-radius: 25px;
+            z-index: 101;
             animation: bounce 2s infinite;
         }
 
         @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-10px);}
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
         }
 
-        /* --- MAIN CARD STYLES --- */
+        /* --- THE CARD --- */
         .card {
             background: white;
             padding: 2.5rem;
             border-radius: 30px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.1);
             text-align: center;
-            max-width: 400px;
+            max-width: 380px;
             width: 85%;
             opacity: 0;
             transform: translateY(20px);
@@ -134,7 +128,7 @@
             justify-content: center;
             gap: 20px;
             height: 60px;
-            position: relative; /* Contain buttons */
+            position: relative;
         }
 
         button {
@@ -144,16 +138,18 @@
             border-radius: 15px;
             cursor: pointer;
             font-weight: bold;
-            transition: all 0.2s ease; /* Smooth movement */
+            transition: top 0.3s ease, left 0.3s ease, transform 0.2s;
         }
 
         #yesBtn { background-color: var(--accent-pink); color: white; z-index: 11; }
+        #yesBtn:hover { transform: scale(1.1); }
         
         #noBtn { 
             background-color: #f5f5f5; 
             color: #9e9e9e; 
-            position: relative; 
+            position: absolute; 
             z-index: 12;
+            left: 140px; /* Initial offset from Yes */
         }
 
         .hidden { display: none; }
@@ -171,7 +167,7 @@
         <div class="envelope">
             <div class="panda-seal">🐼</div>
         </div>
-        <div class="envelope-text">For Kirti 💌</div>
+        <div class="envelope-text">A message for Kirti 💌</div>
     </div>
 
     <div class="card" id="mainCard">
@@ -193,7 +189,7 @@
     </div>
 
     <script>
-        // 1. Generate Background Hearts Immediately
+        // 1. Continuous Background Hearts
         function createBackgroundHeart() {
             const container = document.getElementById('background-hearts');
             const heart = document.createElement('div');
@@ -213,9 +209,9 @@
         }
         setInterval(createBackgroundHeart, 400);
 
-        // 2. Envelope Logic
+        // 2. Open Animation
         function openEnvelope() {
-            document.getElementById('bgMusic').play();
+            document.getElementById('bgMusic').play().catch(() => {});
             const wrapper = document.getElementById('envelope-wrapper');
             wrapper.style.opacity = '0';
             setTimeout(() => {
@@ -224,28 +220,29 @@
             }, 800);
         }
 
-        // 3. The "No" Button Fix
+        // 3. Robust "No" Button Logic
         function moveNoButton() {
             const noBtn = document.getElementById('noBtn');
-            const padding = 50; // Safety margin from edges
+            const padding = 60; // Keep it well inside the viewport
             
-            // Calculate random position within the window
+            // Get available space
             const maxX = window.innerWidth - noBtn.offsetWidth - padding;
             const maxY = window.innerHeight - noBtn.offsetHeight - padding;
 
+            // Generate random coordinate, but ensure it's not at the very edge
             const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
             const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
 
+            // Apply "fixed" immediately on first interaction to prevent it staying in the card
             noBtn.style.position = 'fixed';
-            noBtn.style.left = randomX + 'px';
-            noBtn.style.top = randomY + 'px';
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
         }
 
-        // 4. Success Logic
+        // 4. Celebration
         function showSuccess() {
             document.getElementById('questionArea').classList.add('hidden');
             document.getElementById('successArea').classList.remove('hidden');
-            // Celebration Burst
             for(let i=0; i<40; i++) {
                 setTimeout(createBurstHeart, i * 100);
             }
