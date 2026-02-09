@@ -22,6 +22,38 @@
             align-items: center;
         }
 
+        /* --- BACKGROUND HEARTS --- */
+        #background-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Behind main content */
+            overflow: hidden;
+            pointer-events: none; /* Let clicks pass through */
+        }
+
+        .bg-heart {
+            position: absolute;
+            bottom: -50px; /* Start below the screen */
+            font-size: 20px;
+            color: rgba(255, 128, 171, 0.6); /* Semi-transparent pink */
+            animation: floatUp linear infinite;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg) scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-110vh) rotate(360deg) scale(1.2); /* Move way up and rotate */
+                opacity: 0;
+            }
+        }
+
         /* --- ENVELOPE STYLES --- */
         #envelope-wrapper {
             position: fixed;
@@ -82,6 +114,7 @@
             opacity: 0;
             transform: translateY(20px);
             transition: all 1s ease;
+            z-index: 10; /* Above background hearts */
         }
 
         .card.visible { opacity: 1; transform: translateY(0); }
@@ -117,6 +150,8 @@
         <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
     </audio>
 
+    <div id="background-hearts"></div>
+
     <div id="envelope-wrapper" onclick="openEnvelope()">
         <div class="envelope"></div>
         <div class="envelope-text">Click to open your message, Kirti 💌</div>
@@ -141,6 +176,34 @@
     </div>
 
     <script>
+        /* --- BACKGROUND HEARTS GENERATOR --- */
+        function createBackgroundHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('bg-heart');
+            heart.innerHTML = '❤'; 
+
+            // Randomize properties for natural look
+            const startLeft = Math.random() * 100; // 0% to 100%
+            const duration = Math.random() * 6 + 6; // 6s to 12s
+            const size = Math.random() * 25 + 15; // 15px to 40px
+            
+            heart.style.left = startLeft + 'vw';
+            heart.style.animationDuration = duration + 's';
+            heart.style.fontSize = size + 'px';
+
+            document.getElementById('background-hearts').appendChild(heart);
+
+            // Remove after animation finishes to keep it clean
+            setTimeout(() => {
+                heart.remove();
+            }, duration * 1000);
+        }
+
+        // Start creating hearts instantly
+        setInterval(createBackgroundHeart, 400);
+
+
+        /* --- MAIN SITE LOGIC --- */
         function openEnvelope() {
             // Play Music
             const music = document.getElementById('bgMusic');
@@ -167,12 +230,13 @@
         function showSuccess() {
             document.getElementById('questionArea').classList.add('hidden');
             document.getElementById('successArea').classList.remove('hidden');
+            // Burst of hearts on success
             for(let i=0; i<30; i++) {
-                setTimeout(createHeart, i * 100);
+                setTimeout(createBurstHeart, i * 100);
             }
         }
 
-        function createHeart() {
+        function createBurstHeart() {
             const heart = document.createElement('div');
             heart.innerHTML = '❤️';
             heart.style.position = 'fixed';
@@ -180,6 +244,7 @@
             heart.style.top = '100vh';
             heart.style.fontSize = (Math.random() * 20 + 15) + 'px';
             heart.style.transition = 'all 4s linear';
+            heart.style.zIndex = '11'; // On top of card
             document.body.appendChild(heart);
             setTimeout(() => {
                 heart.style.top = '-10vh';
